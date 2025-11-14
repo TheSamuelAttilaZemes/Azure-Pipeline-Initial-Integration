@@ -1,0 +1,26 @@
+# FILE: .gitignore
+# Lines starting with '#' are comments. Other lines are .gitignore rules.
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE / editor settings
+.vscode/
+.idea/
