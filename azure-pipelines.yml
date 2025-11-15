@@ -10,6 +10,7 @@ pr:
     include:
       - main
       - development
+      - test-and-ops
 
 pool:
   vmImage: 'ubuntu-latest'
