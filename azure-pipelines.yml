@@ -1,0 +1,66 @@
+trigger:
+  branches:
+    include:
+      - main
+      - dev
+      - test-and-ops
+
+pr:
+  branches:
+    include:
+      - main
+      - development
+      - test-and-ops
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  pythonVersion: '3.11'
+
+stages:
+- stage: Build_Test_Analyze
+  displayName: 'Build, Test, Static Analysis'
+  jobs:
+  - job: build_test
+    displayName: 'Install dependencies, run tests, coverage and lint'
+    steps:
+    - task: UsePythonVersion@0
+      displayName: 'Use Python $(pythonVersion)'
+      inputs:
+        versionSpec: '$(pythonVersion)'
+        addToPath: true
+
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      displayName: 'Install dependencies'
+
+    - script: |
+        echo "Running Pylint on calculator.py"
+        pylint calculator.py
+      displayName: 'Run Pylint (static analysis)'
+
+    - script: |
+        echo "Running pytest with coverage (threshold 80%)"
+        pytest \
+          --junitxml=test-results.xml \
+          --cov=calculator \
+          --cov-report=xml:coverage.xml \
+          --cov-fail-under=80
+      displayName: 'Run tests with coverage'
+
+    - task: PublishTestResults@2
+      displayName: 'Publish test results'
+      inputs:
+        testResultsFiles: 'test-results.xml'
+        testResultsFormat: 'JUnit'
+        failTaskOnFailedTests: true
+
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish code coverage'
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: 'coverage.xml'
+        reportDirectory: '$(System.DefaultWorkingDirectory)'
+        failIfCoverageEmpty: true
