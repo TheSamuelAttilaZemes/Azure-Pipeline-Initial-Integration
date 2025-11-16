@@ -104,28 +104,44 @@ In simple terms, whenever we push or pull in Git, the pipelines will run tests i
 
 ### Yamal Setup for the Pipeline
 
-Pipelines works have the many way or running a job but in ourcase we prefer a yaml format. Its simple and we use yaml in other areas in coputing like eg : CloudFormation in AWS
+Pipelines can operate in various ways, but in our case, we prefer a YAML format. It's simple, and we use YAML in other areas of computing, such as CloudFormation in AWS.
 
-So let's breat the yaml to peaces
+Let’s break down the YAML into its components:
 
-- Trigger = Whenever a Push happend on the branches it will automaticly start the pipeline. Under the trigger we are specifying the branches. In ourcase whenever push happen in all 3 branches it will trigger to start the proccess in pipeline
-- pr = Whenever we update the main or dev the pipeline will run and will be merge the xml files into each branch. Note : This approach is not ideal but we try to run the test separtly so the entire pipeline will not crash during the run
-- pool = Defines the enviroment where the pipeline will run . Our case is latest version of ubunut
-- variables : pythonVersion = We are creating a variable to hold a python version so that every time we need specifiy the version of python we use the variable and call it via $ sigh
--  scritpt : Execution of installemnt needed depencencies to run pipeline
--  1. python -m pip install --upgrade pip instaling upto date python dependencies in the
-   2. pip install -r requirments.txt that we specs before in local testing - pytest , pylint
-   3. pytest --cov=calculator --cov-report=xml --cov-fail-under=80 =
-Specs of line 3 explained :
-- pytest :
-- Runs all test files (e.g. test_calculator.py).
-- --cov=calculator : 
-- Measures how much of the calculator module is executed during tests.
-- --cov-fail-under=80 :
-- If total coverage is less than 80%, pytest returns a non-zero exit code.
-- pylint calculator.py :
-- Runs the Pylint static testing to examine the code
-- - task: PublishTestResults@2
-  - in this task we are saying the result of fromated will be in the xml file using JUinit format
-  - if the task fails we inputed command : " failTaskOnFailedTests: true " that ensures that if tests failed, the job is marked as failed
-  
+- **Trigger**: Whenever a push occurs on the branches, it will automatically start the pipeline. Under the trigger, we specify the branches. In our case, whenever a push happens in any of the three branches, it triggers the process in the pipeline.
+- **Pull Request (PR)**: Whenever we update the `main` or `dev` branch, the pipeline will run and merge the XML files into each branch. Note: This approach is not ideal, but we try to run the tests separately to prevent the entire pipeline from crashing during execution.
+- **Pool**: This defines the environment where the pipeline will run. In our case, we are using the latest version of Ubuntu.
+- **Variables**: We create a variable to hold the Python version, so that every time we need to specify the version of Python, we can reference it via the `$` symbol.
+- **Script**: This section executes the installation of the necessary dependencies to run the pipeline:
+   1. `python -m pip install --upgrade pip`: This command updates Python dependencies.
+   2. `pip install -r requirements.txt`: This installs the dependencies we specified during local testing, such as `pytest` and `pylint`.
+   3. `pytest --cov=calculator --cov-report=xml --cov-fail-under=80`: 
+      - `pytest` runs all test files (e.g., `test_calculator.py`).
+      - `--cov=calculator`: This option measures how much of the calculator module is executed during the tests.
+      - `--cov-fail-under=80`: If the total coverage is below 80%, `pytest` will return a non-zero exit code.
+- `pylint calculator.py`: This runs static testing to examine the code.
+
+Next, we have:
+
+- **Task: PublishTestResults@2**: In this task, we're specifying that the results will be formatted in an XML file using the JUnit format. If the task fails, we input the command `failTaskOnFailedTests: true`, which ensures that if tests fail, the job is marked as failed.
+- From this yml we achieve that whenever a push happens the the trigger of pipeline will start the CI processes and we explain the YML structure
+
+## Branch and Pipeline Protection
+
+In Azure, we protect the pipelines using teams. We create teams and add policies that define the privileges available to them. The three major roles that can be set are:
+- Admin
+- Read
+
+**Action Settings:**
+- Allow
+- Deny
+
+These settings can be accessed in the security settings of each team and provide the necessary safeguards to ensure that only authorized people or groups can execute the pipeline.
+
+Regarding branch protection in Git, this is managed through the settings. The reason branch protection is not implemented in our Git repository is that it requires organizational settings, and since the requirements in CA2 dictate that the repository must be private, the protection has not been set up. However, we can still go through the settings:
+
+To apply branch protection, go to the settings, click on "Branches," and add a branch rule set where we specify the required protection. We will need to pass a security setting (depending on the user account, but I have registered a passkey on my personal PC), and then branch protection will be in place.
+# Conclusion
+In conclusion, this report showcases the continuous integration (CI) practice of code implementation into Azure Pipelines. We present the setup, practices, code, and the strategy behind separating source code from the testing environment. We conduct local tests before implementation into the pipelines as a strategy to preserve the allocation of resources provided by Azure. 
+Additionally, we highlight the structure and capabilities of Pylint. Within Azure, we detail the connection and YAML structure that defines the pipeline and the creation of CI processes. We also briefly mention security settings (images will be included in screenshots) and how we can secure both Git and Azure environments.
+One issue that the author of this report did not manage effectively was running multiple jobs simultaneously across all branches. This would require a redesign of the Azure YAML configuration. Currently, our approach involves testing each branch individually to ensure we achieve a CI coverage of over 80%.
