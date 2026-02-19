@@ -1,4 +1,4 @@
-﻿# Python Calculator - CA2 CI Pipeline (Azure DevOps)
+﻿# Python Calculator - Azure-Pipeline-Initial-Integration (Azure DevOps)
 
 In this report, we will discuss how we met the requirements for CA2 by utilizing DevOps practices. For the test, we implemented a GenAI Python code that acts as a calculator, which allowed us to apply our DevOps CI implementation practices.
 
@@ -145,3 +145,4 @@ To apply branch protection, go to the settings, click on "Branches," and add a b
 In conclusion, this report showcases the continuous integration (CI) practice of code implementation into Azure Pipelines. We present the setup, practices, code, and the strategy behind separating source code from the testing environment. We conduct local tests before implementation into the pipelines as a strategy to preserve the allocation of resources provided by Azure. 
 Additionally, we highlight the structure and capabilities of Pylint. Within Azure, we detail the connection and YAML structure that defines the pipeline and the creation of CI processes. We also briefly mention security settings (images will be included in screenshots) and how we can secure both Git and Azure environments.
 One issue that the author of this report did not manage effectively was running multiple jobs simultaneously across all branches. This would require a redesign of the Azure YAML configuration. Currently, our approach involves testing each branch individually to ensure we achieve a CI coverage of over 80%.
+
